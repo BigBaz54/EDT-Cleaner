@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         EDT Cleaner
 // @namespace    http://tampermonkey.net/
-// @version      4.0
+// @version      4.1
 // @description  ça marche -pas- ptn
 // @author       BigBaz
 // @match        https://edt.telecomnancy.univ-lorraine.fr/*
@@ -34,9 +34,18 @@
         for (let i = 0; i<columns.length; i++) {
             var curCol = columns[i];
             if (curCol.querySelectorAll('.fc-now-indicator').length != 0) {break;}
-            console.log(curCol.querySelectorAll(".fc-time-grid-event").forEach((e) => {e.style.display = 'none';}));
             curCol.querySelectorAll(".fc-time-grid-event").forEach((e) => {e.style.display = 'none';});
         }
+        var [hour, min] = new Date().toLocaleTimeString("fr-FR").split(":").slice(0,2);
+        [hour, min] = [parseInt(hour), parseInt(min)];
+        curCol.querySelectorAll(".fc-time-grid-event").forEach((e) => {
+            var [cHour, cMin] = e.querySelector('span').innerText.split(" - ")[1].split(":");
+            [cHour, cMin] = [parseInt(cHour), parseInt(cMin)];
+            console.log(cHour, cMin);
+            if (cHour<hour || (cHour==hour && cMin<min)) {
+                e.style.display = 'none';
+            }
+        });
     }
 
     document.querySelector('.fc-prev-button').onclick = () => {setTimeout(test, 100)};
