@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         EDT Cleaner
 // @namespace    http://tampermonkey.net/
-// @version      4.1
+// @version      5.0
 // @description  ça marche -pas- ptn
 // @author       BigBaz
 // @match        https://edt.telecomnancy.univ-lorraine.fr/*
@@ -23,8 +23,22 @@
 (function() {
     'use strict';
 
+    function clickToHide() {
+        document.querySelectorAll(".fc-time-grid-event").forEach((c) => {c.onclick = () => {c.style.display = "none"}});
+    }
+    setTimeout(clickToHide, 1000);
 
-    setTimeout(test, 1000);
+    function filterByName(s) {
+         document.querySelectorAll(".fc-time-grid-event").forEach((e) => {
+             if (!(e.querySelector('.fc-title').innerText.toLowerCase().includes(s.toLowerCase()))) {
+                 e.style.display = 'none';
+             }
+         })
+    }
+
+    document.querySelector('.fc-prev-button').onclick = () => {setTimeout(clickToHide, 100); setTimeout(() => filterByName(document.querySelector('#searchInput').value), 100)};
+    document.querySelector('.fc-next-button').onclick = () => {setTimeout(clickToHide, 100); setTimeout(() => filterByName(document.querySelector('#searchInput').value), 100)};
+
     window.reset = () => {
         document.querySelectorAll(".fc-time-grid-event").forEach((e) => {e.style.display = '';})
     }
@@ -48,18 +62,27 @@
         });
     }
 
-    document.querySelector('.fc-prev-button').onclick = () => {setTimeout(test, 100)};
-    document.querySelector('.fc-next-button').onclick = () => {setTimeout(test, 100)};
     var body = document.querySelector("body");
+
     var options = document.createElement('div');
     options.id = "options";
     options.style.display = 'flex';
-    options.style.flexDirection = 'column';
+    options.style.flexDirection = 'row';
+    options.style.justifyContent = 'space-between';
     options.style.alignItems = "center";
-    options.style.width = '250px';
+    options.style.width = '450px';
+
+    var hide = document.createElement('div');
+    hide.id = "hide";
+    hide.style.display = 'flex';
+    hide.style.flexDirection = 'column';
+    hide.style.alignItems = "center";
+    hide.style.width = '250px';
+
     var colors = document.createElement('div');
     colors.id = "colors";
     colors.style.display = 'flex';
+
     var past = document.createElement('span');
     past.id = "past";
     past.style.display = "flex";
@@ -74,8 +97,34 @@
     past.innerText = "Passés";
     past.style.userSelect = "none";
     past.onclick = () => {window.hidePast()};
-    options.appendChild(colors);
-    options.appendChild(past);
+
+    hide.appendChild(colors);
+    hide.appendChild(past);
+
+    var search = document.createElement('div');
+    search.style.display = "flex";
+    search.style.flexDirection = 'column';
+    search.style.alignItems = "center";
+    search.style.justifyContent = "space-evenly";
+    search.style.height = "80px";
+
+    var searchName = document.createElement('span');
+    searchName.id = "searchName";
+    searchName.innerText = 'Rechercher un cours'
+    searchName.style.textDecoration = "underline";
+
+    var searchInput = document.createElement('input')
+    searchInput.id = "searchInput";
+    searchInput.addEventListener("change", (e) => {
+        filterByName(e.target.value);
+    })
+
+    search.appendChild(searchName);
+    search.appendChild(searchInput);
+
+    options.appendChild(hide);
+    options.appendChild(search);
+
     var violet = document.createElement('div');
     var jaune = document.createElement('div');
     var rouge = document.createElement('div');
@@ -91,11 +140,13 @@
     bleu.onclick = (() => {document.querySelectorAll('.fc-time-grid-event').forEach((e) => {if (e.style.backgroundColor == 'rgb(0, 102, 204)') {e.style.display = "none"}})});
     vert.style.background = 'rgb(0, 128, 0)';
     vert.onclick = (() => {document.querySelectorAll('.fc-time-grid-event').forEach((e) => {if (e.style.backgroundColor == 'rgb(0, 128, 0)') {e.style.display = "none"}})});
+
     colors.appendChild(violet);
     colors.appendChild(jaune);
     colors.appendChild(rouge);
     colors.appendChild(bleu);
     colors.appendChild(vert);
+
     for (var i=0; i<colors.children.length; i++) {
         var o = colors.children[i];
         o.style.height = "20px";
@@ -105,11 +156,13 @@
         o.style.cursor = "pointer";
     }
     colors.style.marginLeft = "20px";
+
     var optionText = document.createElement('span');
     optionText.innerText = "Cliquer pour supprimer";
     optionText.style.textDecoration = "underline";
     optionText.style.marginLeft = "43px";
     options.prepend(optionText);
+
     var undo = document.createElement('div');
     undo.style.height = "20px";
     undo.style.width = "20px";
@@ -119,17 +172,16 @@
     undo.style.margin = "10px";
     undo.onclick = () => {window.reset()};
     undo.id = "undo";
+
     var undo1 = document.createElement('div');
     var undo2 = document.createElement('div');
     undo1.style = "top:3px;left:3px;box-sizing: border-box;position: relative;display: block;transform: scale(var(--ggs,1));width: 14px;height: 14px;border: 2px solid; border-left-color: transparent;border-radius: 100px"
     undo2.style = "content: '';display: block;box-sizing: border-box;position: relative;width: 6px;height: 6px;border-top: 2px solid;border-left: 2px solid;top: -11px;left: 3px;transform: rotate(-90deg)";
     undo.appendChild(undo1);
     undo.appendChild(undo2);
+
     colors.appendChild(undo);
+
     body.insertBefore(options, document.querySelector(".columns"));
     body.insertBefore(optionText, options);
-
-    function test() {
-        document.querySelectorAll(".fc-time-grid-event").forEach((c) => {c.onclick = () => {c.style.display = "none"}});
-    }
 })()
