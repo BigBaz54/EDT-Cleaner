@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         EDT Cleaner
 // @namespace    http://tampermonkey.net/
-// @version      5.0
+// @version      5.1
 // @description  ça marche -pas- ptn
 // @author       BigBaz
 // @match        https://edt.telecomnancy.univ-lorraine.fr/*
@@ -29,9 +29,10 @@
     setTimeout(clickToHide, 1000);
 
     function filterByName(s) {
-         document.querySelectorAll(".fc-time-grid-event").forEach((e) => {
-             if (!(e.querySelector('.fc-title').innerText.toLowerCase().includes(s.toLowerCase()))) {
-                 e.style.display = 'none';
+        window.reset()
+        document.querySelectorAll(".fc-time-grid-event").forEach((e) => {
+            if (!(e.querySelector('.fc-title').innerText.toLowerCase().includes(s.toLowerCase()))) {
+                e.style.display = 'none';
              }
          })
     }
@@ -70,7 +71,7 @@
     options.style.flexDirection = 'row';
     options.style.justifyContent = 'space-between';
     options.style.alignItems = "center";
-    options.style.width = '450px';
+    options.style.width = '460px';
 
     var hide = document.createElement('div');
     hide.id = "hide";
@@ -98,6 +99,13 @@
     past.style.userSelect = "none";
     past.onclick = () => {window.hidePast()};
 
+    var optionText = document.createElement('span');
+    optionText.id = "optionText";
+    optionText.innerText = "Cliquer pour supprimer";
+    optionText.style.textDecoration = "underline";
+    optionText.style.marginRight = "22px";
+
+    hide.appendChild(optionText);
     hide.appendChild(colors);
     hide.appendChild(past);
 
@@ -105,13 +113,17 @@
     search.style.display = "flex";
     search.style.flexDirection = 'column';
     search.style.alignItems = "center";
-    search.style.justifyContent = "space-evenly";
+    search.style.justifyContent = "space-between";
     search.style.height = "80px";
 
     var searchName = document.createElement('span');
     searchName.id = "searchName";
     searchName.innerText = 'Rechercher un cours'
     searchName.style.textDecoration = "underline";
+    searchName.style.marginBottom = "20px";
+
+    var searchBar = document.createElement('div');
+    searchBar.style.display = 'flex';
 
     var searchInput = document.createElement('input')
     searchInput.id = "searchInput";
@@ -119,11 +131,22 @@
         filterByName(e.target.value);
     })
 
-    search.appendChild(searchName);
-    search.appendChild(searchInput);
+    var searchOK = document.createElement('span')
+    searchOK.id = "searchOK";
+    searchOK.style.background = "lightgrey";
+    searchOK.style.borderRadius = "5px";
+    searchOK.style.cursor = "pointer";
+    searchOK.style.padding = '3px';
+    searchOK.style.marginLeft = '2px';
+    searchOK.style.border = "solid 1px black";
+    searchOK.innerText = "OK";
+    searchOK.style.userSelect = "none";
 
-    options.appendChild(hide);
-    options.appendChild(search);
+    search.appendChild(searchName);
+    search.appendChild(searchBar);
+
+    searchBar.appendChild(searchInput);
+    searchBar.appendChild(searchOK);
 
     var violet = document.createElement('div');
     var jaune = document.createElement('div');
@@ -157,12 +180,6 @@
     }
     colors.style.marginLeft = "20px";
 
-    var optionText = document.createElement('span');
-    optionText.innerText = "Cliquer pour supprimer";
-    optionText.style.textDecoration = "underline";
-    optionText.style.marginLeft = "43px";
-    options.prepend(optionText);
-
     var undo = document.createElement('div');
     undo.style.height = "20px";
     undo.style.width = "20px";
@@ -182,6 +199,8 @@
 
     colors.appendChild(undo);
 
+    options.appendChild(hide);
+    options.appendChild(search);
+
     body.insertBefore(options, document.querySelector(".columns"));
-    body.insertBefore(optionText, options);
 })()
