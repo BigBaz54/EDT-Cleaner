@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         EDT Cleaner
 // @namespace    http://tampermonkey.net/
-// @version      5.4
+// @version      5.4.1
 // @description  ça marche -pas- ptn
 // @author       BigBaz
 // @match        https://edt.telecomnancy.univ-lorraine.fr/*
@@ -39,7 +39,7 @@
     setTimeout(clickToHide, 1000);
 
     function filterByName(s) {
-        window.reset()
+        document.querySelectorAll(".fc-time-grid-event").forEach((e) => {e.style.display = '';});
         document.querySelectorAll(".fc-time-grid-event").forEach((e) => {
             if (!(e.querySelector('.fc-title').innerText.toLowerCase().includes(s.toLowerCase()))) {
                 e.style.display = 'none';
