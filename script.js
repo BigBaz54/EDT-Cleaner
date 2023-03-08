@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         EDT Cleaner
 // @namespace    http://tampermonkey.net/
-// @version      5.1
+// @version      5.2
 // @description  ça marche -pas- ptn
 // @author       BigBaz
 // @match        https://edt.telecomnancy.univ-lorraine.fr/*
@@ -203,4 +203,20 @@
     options.appendChild(search);
 
     body.insertBefore(options, document.querySelector(".columns"));
+
+
+
+    document.addEventListener('keydown', (event) => {
+        var name = event.key;
+        console.log(name);
+        if (name == 'ArrowRight') {
+            document.querySelector('.fc-next-button').click();
+        }
+        if (name == 'ArrowLeft') {
+            document.querySelector('.fc-prev-button').click();
+        }
+        if (name == 'Shift') {
+            document.querySelector('.fc-today-button').click();
+        }
+    }, false);
 })()
