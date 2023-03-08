@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         EDT Cleaner
 // @namespace    http://tampermonkey.net/
-// @version      5.2
+// @version      5.3
 // @description  ça marche -pas- ptn
 // @author       BigBaz
 // @match        https://edt.telecomnancy.univ-lorraine.fr/*
@@ -23,6 +23,16 @@
 (function() {
     'use strict';
 
+    function setIntervalN(func, delay, repetitions) {
+        var n = 0;
+        var intervalID = window.setInterval(function () {
+            func();
+            if (++n === repetitions) {
+                window.clearInterval(intervalID);
+            }
+        }, delay);
+    }
+
     function clickToHide() {
         document.querySelectorAll(".fc-time-grid-event").forEach((c) => {c.onclick = () => {c.style.display = "none"}});
     }
@@ -37,8 +47,9 @@
          })
     }
 
-    document.querySelector('.fc-prev-button').onclick = () => {setTimeout(clickToHide, 100); setTimeout(() => filterByName(document.querySelector('#searchInput').value), 100)};
-    document.querySelector('.fc-next-button').onclick = () => {setTimeout(clickToHide, 100); setTimeout(() => filterByName(document.querySelector('#searchInput').value), 100)};
+    document.querySelector('.fc-prev-button').onclick = () => {setIntervalN(clickToHide, 5, 20); setIntervalN(() => filterByName(document.querySelector('#searchInput').value), 5, 20)};
+    document.querySelector('.fc-next-button').onclick = () => {setIntervalN(clickToHide, 5, 20); setIntervalN(() => filterByName(document.querySelector('#searchInput').value), 5, 20)};
+    document.querySelector('.fc-today-button').onclick = () => {setIntervalN(clickToHide, 5, 20); setIntervalN(() => filterByName(document.querySelector('#searchInput').value), 5, 20)};
 
     window.reset = () => {
         document.querySelectorAll(".fc-time-grid-event").forEach((e) => {e.style.display = '';})
