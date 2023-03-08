@@ -9,3 +9,8 @@ Click on the arrow to display all the hidden courses.
 
 ## Research courses
 Display only certain courses by typing their name in the search bar.
+
+## Navigate easily
+Press right arrow to go to next week.
+Press left arrow to go to previous week.
+Press  Shift to go to today's week.
