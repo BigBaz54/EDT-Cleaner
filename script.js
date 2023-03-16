@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         EDT Cleaner
 // @namespace    http://tampermonkey.net/
-// @version      5.4.1
+// @version      5.5
 // @description  ça marche -pas- ptn
 // @author       BigBaz
 // @match        https://edt.telecomnancy.univ-lorraine.fr/*
@@ -57,22 +57,24 @@
     }
 
     window.hidePast = () => {
-        var columns = document.querySelector(".fc-now-indicator-line").parentNode.parentNode.parentNode.children;
-        for (let i = 0; i<columns.length; i++) {
-            var curCol = columns[i];
-            if (curCol.querySelectorAll('.fc-now-indicator').length != 0) {break;}
-            curCol.querySelectorAll(".fc-time-grid-event").forEach((e) => {e.style.display = 'none';});
-        }
+        var columns = document.querySelectorAll(".fc-content-col");
         var [hour, min] = new Date().toLocaleTimeString("fr-FR").split(":").slice(0,2);
         [hour, min] = [parseInt(hour), parseInt(min)];
-        curCol.querySelectorAll(".fc-time-grid-event").forEach((e) => {
-            var [cHour, cMin] = e.querySelector('span').innerText.split(" - ")[1].split(":");
-            [cHour, cMin] = [parseInt(cHour), parseInt(cMin)];
-            console.log(cHour, cMin);
-            if (cHour<hour || (cHour==hour && cMin<min)) {
-                e.style.display = 'none';
-            }
-        });
+        var today = new Date().getDay()==0 ? 5 : new Date().getDay()-1;
+        for (let i = 0; i<today; i++) {
+            var curCol = columns[i];
+            curCol.querySelectorAll(".fc-time-grid-event").forEach((e) => {e.style.display = 'none';});
+        }
+        if (today!=6) {
+            curCol = columns[today];
+            curCol.querySelectorAll(".fc-time-grid-event").forEach((e) => {
+                var [cHour, cMin] = e.querySelector('span').innerText.split(" - ")[1].split(":");
+                [cHour, cMin] = [parseInt(cHour), parseInt(cMin)];
+                if (cHour<hour || (cHour==hour && cMin<min)) {
+                    e.style.display = 'none';
+                }
+            });
+        }
     }
 
     var body = document.querySelector("body");
@@ -220,7 +222,6 @@
 
     document.addEventListener('keydown', (event) => {
         var name = event.key;
-        console.log(name);
         if (name == 'ArrowRight') {
             document.querySelector('.fc-next-button').click();
         }
