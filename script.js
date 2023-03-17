@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         EDT Cleaner
 // @namespace    http://tampermonkey.net/
-// @version      5.5
+// @version      5.6
 // @description  ça marche -pas- ptn
 // @author       BigBaz
 // @match        https://edt.telecomnancy.univ-lorraine.fr/*
@@ -57,6 +57,15 @@
     }
 
     window.hidePast = () => {
+        var displayedWeek = parseInt(document.querySelector(".fc-week-number > span").innerText.slice(4,6));
+        var currentWeek = window.weekNumber()
+        if (displayedWeek > currentWeek) {
+            return
+        }
+        if (displayedWeek < currentWeek) {
+            document.querySelectorAll(".fc-time-grid-event").forEach((e) => {e.style.display = 'none';});
+            return
+        }
         var columns = document.querySelectorAll(".fc-content-col");
         var [hour, min] = new Date().toLocaleTimeString("fr-FR").split(":").slice(0,2);
         [hour, min] = [parseInt(hour), parseInt(min)];
@@ -75,6 +84,13 @@
                 }
             });
         }
+    }
+
+    window.weekNumber = (date = new Date()) => {
+        var firstJanuary = new Date(date.getFullYear(), 0, 1);
+        var dayNr = Math.ceil((date - firstJanuary) / (24 * 60 * 60 * 1000));
+        var weekNr = Math.ceil((dayNr + firstJanuary.getDay()) / 7);
+        return weekNr;
     }
 
     var body = document.querySelector("body");
